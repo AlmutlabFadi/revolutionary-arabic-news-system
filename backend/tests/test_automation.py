@@ -1,6 +1,9 @@
 import pytest
 import time
+import sys
+import os
 from datetime import datetime
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.services.automation_service import AutomationService
 from src.services.news_scraper import NewsScraper, NewsArticleData
 from src.services.ai_processor import AINewsProcessor
