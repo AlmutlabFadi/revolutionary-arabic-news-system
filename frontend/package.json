@@ -1,7 +1,7 @@
 {
-  "name": "advanced-news-frontend",
+  "name": "golan24-frontend",
   "version": "1.0.0",
-  "description": "Advanced Arabic News System - Frontend Dashboard",
+  "description": "Golan 24 - Revolutionary Arabic News System Frontend",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🧪 Testing Advanced News System Automation Pipeline"
+echo "🧪 Testing Golan 24 Automation Pipeline"
 
 test_processing_time() {
     echo "⏱️  Testing processing time (must be <60 seconds)..."

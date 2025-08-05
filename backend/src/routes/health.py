@@ -10,7 +10,7 @@ def health_check():
         'status': 'healthy',
         'timestamp': datetime.utcnow().isoformat(),
         'version': '1.0.0',
-        'service': 'Advanced News System',
+        'service': 'Golan 24',
         'environment': os.getenv('FLASK_ENV', 'production')
     })
 

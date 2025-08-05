@@ -26,7 +26,7 @@ def generate_bulletin():
                             'name': 'أحمد الشامي' if language == 'ar' else 'Michael Johnson',
                             'voice_id': 'male_arabic' if language == 'ar' else 'male_english'
                         },
-                        'text': 'أهلاً وسهلاً بكم في نشرة أخبار الشام، أنا أحمد الشامي' if language == 'ar' else 'Welcome to Sham News, I am Michael Johnson',
+                        'text': 'أهلاً وسهلاً بكم في نشرة جولان 24، أنا أحمد الشامي' if language == 'ar' else 'Welcome to Golan 24, I am Michael Johnson',
                         'duration_estimate': 0.5
                     },
                     {

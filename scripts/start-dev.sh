@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting Advanced News System Development Environment"
+echo "🚀 Starting Golan 24 Development Environment"
 
 if ! docker info > /dev/null 2>&1; then
     echo "❌ Docker is not running. Please start Docker first."
@@ -23,7 +23,7 @@ echo "🔍 Checking service health..."
 docker-compose ps
 
 echo ""
-echo "✅ Advanced News System is ready!"
+echo "✅ Golan 24 is ready!"
 echo ""
 echo "🌐 Access URLs:"
 echo "   Frontend Dashboard: http://localhost:3000"

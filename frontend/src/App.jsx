@@ -10,6 +10,7 @@ import SourcesManager from './pages/SourcesManager'
 import ArticlesManager from './pages/ArticlesManager'
 import VirtualStudio from './pages/VirtualStudio'
 import SystemSettings from './pages/SystemSettings'
+import UserManagement from './pages/UserManagement'
 import { WebSocketProvider } from './contexts/WebSocketContext'
 
 function App() {
@@ -39,7 +40,8 @@ function App() {
               <Route path="/sources" element={<SourcesManager />} />
               <Route path="/articles" element={<ArticlesManager />} />
               <Route path="/virtual-studio" element={<VirtualStudio />} />
-              <Route path="/settings" element={<SystemSettings />} />
+              <Route path="/users" element={<UserManagement />} />
+            <Route path="/settings" element={<SystemSettings />} />
             </Routes>
           </main>
         </div>

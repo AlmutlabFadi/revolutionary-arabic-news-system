@@ -73,7 +73,7 @@ const NewsPortal = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">أخبار الشام</h1>
+              <h1 className="text-3xl font-bold text-gray-900">جولان 24</h1>
               <p className="text-gray-600 mt-1">منصة إخبارية متقدمة مدعومة بالذكاء الاصطناعي</p>
             </div>
             <div className="text-sm text-gray-500">
@@ -174,7 +174,7 @@ const NewsPortal = () => {
       <footer className="bg-gray-900 text-white py-8 mt-12">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h3 className="text-xl font-bold mb-2">أخبار الشام</h3>
+            <h3 className="text-xl font-bold mb-2">جولان 24</h3>
             <p className="text-gray-400 text-sm">
               منصة إخبارية متقدمة مدعومة بالذكاء الاصطناعي
             </p>

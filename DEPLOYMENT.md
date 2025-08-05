@@ -1,4 +1,4 @@
-# نظام الأخبار المتقدم - دليل النشر
+# جولان 24 - دليل النشر
 
 ## 🚀 النشر السريع
 
@@ -158,7 +158,7 @@ sudo -u newsapp docker-compose -f docker-compose.yml up -d
 # إعداد خدمة systemd
 sudo tee /etc/systemd/system/advanced-news.service > /dev/null <<EOF
 [Unit]
-Description=Advanced News System
+Description=Golan 24 News System
 Requires=docker.service
 After=docker.service
 
@@ -233,4 +233,4 @@ sudo ufw enable
 
 ---
 
-**نظام الأخبار المتقدم** - نشر احترافي لثورة الإعلام الذكي 🚀
+**جولان 24** - نشر احترافي لثورة الإعلام الذكي 🚀

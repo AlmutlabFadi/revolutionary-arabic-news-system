@@ -16,6 +16,10 @@ const Header = ({ onMenuClick }) => {
             <Menu className="w-6 h-6" />
           </button>
           
+          <div className="hidden lg:block mr-6">
+            <h1 className="text-xl font-bold text-gray-900">جولان 24</h1>
+          </div>
+          
           <div className="hidden md:flex items-center mr-4">
             <div className="relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />

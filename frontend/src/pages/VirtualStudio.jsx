@@ -136,7 +136,7 @@ const VirtualStudio = () => {
               <div className="w-full h-full bg-gray-900 flex items-center justify-center">
                 <div className="text-center text-gray-400">
                   <Video className="w-16 h-16 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">أخبار الشام</h3>
+                  <h3 className="text-xl font-semibold mb-2">جولان 24</h3>
                   <p>الاستوديو الافتراضي</p>
                 </div>
               </div>

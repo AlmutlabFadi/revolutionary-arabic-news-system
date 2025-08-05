@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Deploying Advanced News System"
+echo "🚀 Deploying Golan 24"
 
 echo "🏗️  Building production images..."
 docker-compose -f docker-compose.yml build

@@ -9,6 +9,7 @@ import {
   FileText, 
   Video, 
   Settings,
+  Users,
   X
 } from 'lucide-react'
 
@@ -16,13 +17,14 @@ const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
   const location = useLocation()
 
   const menuItems = [
-    { id: 'dashboard', label: 'لوحة التحكم', icon: LayoutDashboard, path: '/dashboard' },
+    { id: 'dashboard', label: 'لوحة التحكم', icon: LayoutDashboard, path: '/' },
     { id: 'news-portal', label: 'البوابة الإخبارية', icon: Globe, path: '/news-portal' },
     { id: 'automation', label: 'التحكم في الأتمتة', icon: Zap, path: '/automation' },
     { id: 'analytics', label: 'التحليلات', icon: BarChart3, path: '/analytics' },
     { id: 'sources', label: 'إدارة المصادر', icon: Database, path: '/sources' },
     { id: 'articles', label: 'إدارة الأخبار', icon: FileText, path: '/articles' },
     { id: 'virtual-studio', label: 'الاستوديو الافتراضي', icon: Video, path: '/virtual-studio' },
+    { id: 'users', label: 'إدارة المستخدمين', icon: Users, path: '/users' },
     { id: 'settings', label: 'إعدادات النظام', icon: Settings, path: '/settings' }
   ]
 
@@ -40,10 +42,13 @@ const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
         ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
       `}>
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">نظام الأخبار المتقدم</h2>
+          <div className="flex flex-col items-center w-full">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">جولان 24</h2>
+            <p className="text-xs text-gray-600 text-center">منصة إخبارية ذكية</p>
+          </div>
           <button 
             onClick={onClose}
-            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600"
+            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 absolute top-4 left-4"
           >
             <X className="w-5 h-5" />
           </button>
@@ -81,7 +86,7 @@ const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
         
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
           <div className="text-xs text-gray-500 text-center">
-            نظام الأخبار المتقدم v1.0
+            جولان 24 v1.0
             <br />
             مدعوم بالذكاء الاصطناعي
           </div>
