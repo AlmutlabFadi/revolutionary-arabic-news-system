@@ -11,6 +11,8 @@ class NewsCategory(Enum):
     TECHNOLOGY = "technology"
     HEALTH = "health"
     CULTURE = "culture"
+    CRYPTOCURRENCY = "cryptocurrency"
+    STOCK_MARKET = "stock_market"
     GENERAL = "general"
 
 class NewsStatus(Enum):

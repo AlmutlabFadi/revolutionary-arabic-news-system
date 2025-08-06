@@ -15,7 +15,15 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors;
+    @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors;
+  }
+  
+  .btn-gold {
+    @apply bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600 transition-colors;
+  }
+  
+  .btn-danger {
+    @apply bg-accent-red text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors;
   }
   
   .card {
@@ -23,7 +31,7 @@
   }
   
   .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent;
   }
 }
 

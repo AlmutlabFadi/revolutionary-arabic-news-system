@@ -21,6 +21,7 @@ const VirtualStudio = () => {
   const [presenters, setPresenters] = useState({})
   const [currentPresenter, setCurrentPresenter] = useState(null)
   const [selectedLanguage, setSelectedLanguage] = useState('ar')
+  const [selectedPresenter, setSelectedPresenter] = useState('ar_politics_male')
   const [isLive, setIsLive] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [isLoading, setIsLoading] = useState(false)

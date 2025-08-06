@@ -46,7 +46,9 @@ const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
         { id: 'news-health', label: 'صحة', path: '/news/health' },
         { id: 'news-culture', label: 'ثقافة', path: '/news/culture' },
         { id: 'news-international', label: 'دولي', path: '/news/international' },
-        { id: 'news-syrian', label: 'الشأن السوري', path: '/news/syrian-affairs' }
+        { id: 'news-syrian', label: 'الشأن السوري', path: '/news/syrian-affairs' },
+        { id: 'news-crypto', label: 'العملات الرقمية', path: '/news/cryptocurrency' },
+        { id: 'news-stocks', label: 'الأسواق المالية', path: '/news/stock-market' }
       ]
     },
     { id: 'automation', label: 'التحكم في الأتمتة', icon: Zap, path: '/automation' },
@@ -55,6 +57,10 @@ const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
     { id: 'articles', label: 'إدارة الأخبار', icon: FileText, path: '/articles' },
     { id: 'virtual-studio', label: 'الاستوديو الافتراضي', icon: Video, path: '/virtual-studio' },
     { id: 'users', label: 'إدارة المستخدمين', icon: Users, path: '/users' },
+    { id: 'public-opinion', label: 'إدارة الرأي العام', icon: Users, path: '/public-opinion', adminOnly: true },
+    { id: 'advertising', label: 'إدارة الإعلانات', icon: FileText, path: '/advertising' },
+    { id: 'sponsors', label: 'إدارة الرعاة', icon: Users, path: '/sponsors' },
+    { id: 'contact', label: 'التواصل معنا', icon: MessageSquare, path: '/contact' },
     { id: 'settings', label: 'إعدادات النظام', icon: Settings, path: '/settings' }
   ]
 
