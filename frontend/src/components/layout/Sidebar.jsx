@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
   LayoutDashboard, 
@@ -10,15 +10,45 @@ import {
   Video, 
   Settings,
   Users,
-  X
+  X,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react'
 
 const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
   const location = useLocation()
+  const [expandedMenus, setExpandedMenus] = useState({ 'news-portal': true })
+
+  const toggleSubmenu = (menuId) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menuId]: !prev[menuId]
+    }))
+  }
+
+  const isSubmenuActive = (submenu) => {
+    return submenu.some(item => location.pathname === item.path)
+  }
 
   const menuItems = [
     { id: 'dashboard', label: 'لوحة التحكم', icon: LayoutDashboard, path: '/' },
-    { id: 'news-portal', label: 'البوابة الإخبارية', icon: Globe, path: '/news-portal' },
+    { 
+      id: 'news-portal', 
+      label: 'البوابة الإخبارية', 
+      icon: Globe, 
+      path: '/news-portal',
+      submenu: [
+        { id: 'news-all', label: 'جميع الأخبار', path: '/news-portal' },
+        { id: 'news-politics', label: 'سياسة', path: '/news/politics' },
+        { id: 'news-economy', label: 'اقتصاد', path: '/news/economy' },
+        { id: 'news-sports', label: 'رياضة', path: '/news/sports' },
+        { id: 'news-technology', label: 'تكنولوجيا', path: '/news/technology' },
+        { id: 'news-health', label: 'صحة', path: '/news/health' },
+        { id: 'news-culture', label: 'ثقافة', path: '/news/culture' },
+        { id: 'news-international', label: 'دولي', path: '/news/international' },
+        { id: 'news-syrian', label: 'الشأن السوري', path: '/news/syrian-affairs' }
+      ]
+    },
     { id: 'automation', label: 'التحكم في الأتمتة', icon: Zap, path: '/automation' },
     { id: 'analytics', label: 'التحليلات', icon: BarChart3, path: '/analytics' },
     { id: 'sources', label: 'إدارة المصادر', icon: Database, path: '/sources' },
@@ -59,26 +89,73 @@ const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
             {menuItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.path
+              const hasSubmenu = item.submenu && item.submenu.length > 0
+              const isExpanded = expandedMenus[item.id]
+              const submenuActive = hasSubmenu && isSubmenuActive(item.submenu)
               
               return (
-                <Link
-                  key={item.id}
-                  to={item.path}
-                  onClick={() => {
-                    onViewChange(item.id)
-                    onClose()
-                  }}
-                  className={`
-                    flex items-center px-3 py-2 mb-1 text-sm font-medium rounded-lg transition-colors
-                    ${isActive 
-                      ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-700' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }
-                  `}
-                >
-                  <Icon className="w-5 h-5 ml-3" />
-                  {item.label}
-                </Link>
+                <div key={item.id} className="mb-1">
+                  {hasSubmenu ? (
+                    <button
+                      onClick={() => toggleSubmenu(item.id)}
+                      className={`
+                        w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                        ${isActive || submenuActive
+                          ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-700' 
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        }
+                      `}
+                    >
+                      <div className="flex items-center">
+                        <Icon className="w-5 h-5 ml-3" />
+                        {item.label}
+                      </div>
+                      {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      onClick={() => {
+                        onViewChange(item.id)
+                        onClose()
+                      }}
+                      className={`
+                        flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                        ${isActive 
+                          ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-700' 
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        }
+                      `}
+                    >
+                      <Icon className="w-5 h-5 ml-3" />
+                      {item.label}
+                    </Link>
+                  )}
+                  
+                  {hasSubmenu && isExpanded && (
+                    <div className="mt-1 mr-6 space-y-1">
+                      {item.submenu.map((subItem) => (
+                        <Link
+                          key={subItem.id}
+                          to={subItem.path}
+                          onClick={() => {
+                            onViewChange(subItem.id)
+                            onClose()
+                          }}
+                          className={`
+                            block px-3 py-2 text-sm rounded-lg transition-colors
+                            ${location.pathname === subItem.path
+                              ? 'bg-blue-50 text-blue-600 font-medium border-l-2 border-blue-600'
+                              : 'text-gray-600 hover:bg-gray-50'
+                            }
+                          `}
+                        >
+                          {subItem.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>

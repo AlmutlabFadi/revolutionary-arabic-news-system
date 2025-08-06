@@ -97,6 +97,76 @@ class NewsAPI {
     }
   }
 
+  static async getPoliticsNews(params = {}) {
+    try {
+      const response = await api.get('/news/articles', { params: { ...params, category: 'politics' } })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching politics news:', error)
+      return { articles: [] }
+    }
+  }
+
+  static async getEconomyNews(params = {}) {
+    try {
+      const response = await api.get('/news/articles', { params: { ...params, category: 'economy' } })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching economy news:', error)
+      return { articles: [] }
+    }
+  }
+
+  static async getSportsNews(params = {}) {
+    try {
+      const response = await api.get('/news/articles', { params: { ...params, category: 'sports' } })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching sports news:', error)
+      return { articles: [] }
+    }
+  }
+
+  static async getTechnologyNews(params = {}) {
+    try {
+      const response = await api.get('/news/articles', { params: { ...params, category: 'technology' } })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching technology news:', error)
+      return { articles: [] }
+    }
+  }
+
+  static async getHealthNews(params = {}) {
+    try {
+      const response = await api.get('/news/articles', { params: { ...params, category: 'health' } })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching health news:', error)
+      return { articles: [] }
+    }
+  }
+
+  static async getCultureNews(params = {}) {
+    try {
+      const response = await api.get('/news/articles', { params: { ...params, category: 'culture' } })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching culture news:', error)
+      return { articles: [] }
+    }
+  }
+
+  static async getInternationalNews(params = {}) {
+    try {
+      const response = await api.get('/news/articles', { params: { ...params, category: 'international' } })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching international news:', error)
+      return { articles: [] }
+    }
+  }
+
   static async getSources() {
     try {
       const response = await api.get('/news/sources')
