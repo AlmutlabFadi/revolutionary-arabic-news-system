@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ devin/1733423887-revolutionary-news-automation ]
 
 jobs:
   build-and-deploy:
