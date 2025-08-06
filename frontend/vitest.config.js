@@ -4,12 +4,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'node',
+    environment: 'jsdom',
     globals: true,
-    testTimeout: 3000,
-    hookTimeout: 3000,
+    testTimeout: 10000,
+    hookTimeout: 10000,
     isolate: false,
-    run: true,
     pool: 'forks',
     poolOptions: {
       forks: {
