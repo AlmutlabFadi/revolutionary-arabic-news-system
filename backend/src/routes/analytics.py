@@ -46,7 +46,7 @@ def get_analytics():
         chart_data = []
         for stat in daily_stats:
             chart_data.append({
-                'date': stat.date.isoformat(),
+                'date': stat.date.strftime('%Y-%m-%d') if hasattr(stat.date, 'strftime') else str(stat.date),
                 'articles': stat.articles,
                 'views': stat.views or 0,
                 'users': int(stat.views / 10) if stat.views else 0,

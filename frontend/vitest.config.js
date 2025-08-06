@@ -5,7 +5,17 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/tests/vitest.setup.js'],
-    globals: true
-  }
+    globals: true,
+    testTimeout: 10000,
+    hookTimeout: 10000,
+    isolate: false,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+        maxForks: 1,
+        minForks: 1,
+      },
+    },
+  },
 })

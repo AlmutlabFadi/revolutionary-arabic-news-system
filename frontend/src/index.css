@@ -57,3 +57,27 @@
 .ticker-animation {
   animation: slideIn 30s linear infinite;
 }
+
+/* Category Navigation Styles */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* News Card Hover Effects */
+.news-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* RTL Support for News Layout */
+.news-grid {
+  direction: rtl;
+}
