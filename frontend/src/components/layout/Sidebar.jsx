@@ -12,7 +12,8 @@ import {
   Users,
   X,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  MessageSquare
 } from 'lucide-react'
 
 const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
@@ -31,7 +32,7 @@ const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
   }
 
   const menuItems = [
-    { id: 'dashboard', label: 'لوحة التحكم', icon: LayoutDashboard, path: '/' },
+    { id: 'dashboard', label: 'لوحة التحكم', icon: LayoutDashboard, path: '/dashboard' },
     { 
       id: 'news-portal', 
       label: 'البوابة الإخبارية', 
@@ -60,6 +61,8 @@ const Sidebar = ({ isOpen, onClose, currentView, onViewChange }) => {
     { id: 'public-opinion', label: 'إدارة الرأي العام', icon: Users, path: '/public-opinion', adminOnly: true },
     { id: 'advertising', label: 'إدارة الإعلانات', icon: FileText, path: '/advertising' },
     { id: 'sponsors', label: 'إدارة الرعاة', icon: Users, path: '/sponsors' },
+    { id: 'social-media', label: 'وسائل التواصل الاجتماعي', icon: MessageSquare, path: '/social-media' },
+    { id: 'newsletter', label: 'النشرات البريدية', icon: MessageSquare, path: '/newsletter' },
     { id: 'contact', label: 'التواصل معنا', icon: MessageSquare, path: '/contact' },
     { id: 'settings', label: 'إعدادات النظام', icon: Settings, path: '/settings' }
   ]
