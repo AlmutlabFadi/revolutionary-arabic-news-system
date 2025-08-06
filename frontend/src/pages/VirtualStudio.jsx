@@ -25,6 +25,11 @@ const VirtualStudio = () => {
   const [isLive, setIsLive] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [broadcastSettings, setBroadcastSettings] = useState({
+    quality: 'HD',
+    autoPublish: true,
+    socialMedia: ['facebook', 'telegram', 'youtube']
+  })
 
   useEffect(() => {
     fetchPresenters()
@@ -33,10 +38,140 @@ const VirtualStudio = () => {
 
   const fetchPresenters = async () => {
     try {
-      const data = await NewsAPI.getPresenters()
-      setPresenters(data)
+      const allPresenters = {
+        ar_politics_male: {
+          id: 'ar_politics_male',
+          name: 'أحمد الشامي',
+          specialty: 'السياسة والشؤون العامة',
+          gender: 'male',
+          language: 'ar',
+          avatar_image: '/images/presenters/ar_politics_male.jpg',
+          avatar_video: '/videos/presenters/ar_politics_male.mp4',
+          voice_id: 'ar_male_politics',
+          personality: 'جدي ومحترف، صوت عميق وواضح',
+          experience: '15 سنة في الإعلام السياسي',
+          specialties: ['السياسة', 'الانتخابات', 'الحكومة'],
+          isActive: true,
+          rating: 4.9,
+          bulletinsCount: 1247
+        },
+        ar_economy_female: {
+          id: 'ar_economy_female',
+          name: 'سارة النوري',
+          specialty: 'الاقتصاد والأسواق المالية',
+          gender: 'female',
+          language: 'ar',
+          avatar_image: '/images/presenters/ar_economy_female.jpg',
+          avatar_video: '/videos/presenters/ar_economy_female.mp4',
+          voice_id: 'ar_female_economy',
+          personality: 'ذكية ومحللة، صوت واضح ومقنع',
+          experience: '12 سنة في التحليل الاقتصادي',
+          specialties: ['الاقتصاد', 'البورصة', 'العملات'],
+          isActive: true,
+          rating: 4.8,
+          bulletinsCount: 892
+        },
+        ar_sports_male: {
+          id: 'ar_sports_male',
+          name: 'محمد الرياضي',
+          specialty: 'الرياضة والبطولات',
+          gender: 'male',
+          language: 'ar',
+          avatar_image: '/images/presenters/ar_sports_male.jpg',
+          avatar_video: '/videos/presenters/ar_sports_male.mp4',
+          voice_id: 'ar_male_sports',
+          personality: 'حماسي ومتفاعل، صوت قوي ومشجع',
+          experience: '10 سنوات في الإعلام الرياضي',
+          specialties: ['كرة القدم', 'الألعاب الأولمبية', 'الرياضة المحلية'],
+          isActive: true,
+          rating: 4.7,
+          bulletinsCount: 654
+        },
+        ar_tech_female: {
+          id: 'ar_tech_female',
+          name: 'ليلى التقنية',
+          specialty: 'التكنولوجيا والابتكار',
+          gender: 'female',
+          language: 'ar',
+          avatar_image: '/images/presenters/ar_tech_female.jpg',
+          avatar_video: '/videos/presenters/ar_tech_female.mp4',
+          voice_id: 'ar_female_tech',
+          personality: 'عصرية ومبتكرة، صوت شاب وحيوي',
+          experience: '8 سنوات في تكنولوجيا الإعلام',
+          specialties: ['الذكاء الاصطناعي', 'التطبيقات', 'الابتكار'],
+          isActive: true,
+          rating: 4.9,
+          bulletinsCount: 423
+        },
+        ar_health_male: {
+          id: 'ar_health_male',
+          name: 'د. عمر الصحي',
+          specialty: 'الصحة والطب',
+          gender: 'male',
+          language: 'ar',
+          avatar_image: '/images/presenters/ar_health_male.jpg',
+          avatar_video: '/videos/presenters/ar_health_male.mp4',
+          voice_id: 'ar_male_health',
+          personality: 'طبيب وموثوق، صوت هادئ ومطمئن',
+          experience: '20 سنة في الطب والإعلام الصحي',
+          specialties: ['الطب', 'الصحة العامة', 'الأوبئة'],
+          isActive: true,
+          rating: 4.8,
+          bulletinsCount: 567
+        },
+        ar_culture_female: {
+          id: 'ar_culture_female',
+          name: 'نور الثقافية',
+          specialty: 'الثقافة والفنون',
+          gender: 'female',
+          language: 'ar',
+          avatar_image: '/images/presenters/ar_culture_female.jpg',
+          avatar_video: '/videos/presenters/ar_culture_female.mp4',
+          voice_id: 'ar_female_culture',
+          personality: 'مثقفة وأنيقة، صوت عذب ومعبر',
+          experience: '14 سنة في الإعلام الثقافي',
+          specialties: ['الأدب', 'الفنون', 'التراث'],
+          isActive: true,
+          rating: 4.6,
+          bulletinsCount: 345
+        },
+        ar_international_male: {
+          id: 'ar_international_male',
+          name: 'خالد الدولي',
+          specialty: 'الأخبار الدولية',
+          gender: 'male',
+          language: 'ar',
+          avatar_image: '/images/presenters/ar_international_male.jpg',
+          avatar_video: '/videos/presenters/ar_international_male.mp4',
+          voice_id: 'ar_male_international',
+          personality: 'دبلوماسي ومطلع، صوت رسمي ومحترم',
+          experience: '18 سنة في الصحافة الدولية',
+          specialties: ['السياسة الدولية', 'الدبلوماسية', 'الصراعات'],
+          isActive: true,
+          rating: 4.7,
+          bulletinsCount: 789
+        },
+        ar_breaking_female: {
+          id: 'ar_breaking_female',
+          name: 'رنا العاجلة',
+          specialty: 'الأخبار العاجلة',
+          gender: 'female',
+          language: 'ar',
+          avatar_image: '/images/presenters/ar_breaking_female.jpg',
+          avatar_video: '/videos/presenters/ar_breaking_female.mp4',
+          voice_id: 'ar_female_breaking',
+          personality: 'سريعة ومتيقظة، صوت واضح وعاجل',
+          experience: '9 سنوات في الأخبار العاجلة',
+          specialties: ['الأخبار العاجلة', 'التغطية المباشرة', 'الأحداث الطارئة'],
+          isActive: true,
+          rating: 4.8,
+          bulletinsCount: 1156
+        }
+      }
       
-      const defaultPresenter = Object.values(data).find(p => p.language === selectedLanguage)
+      setPresenters(allPresenters)
+      
+      const defaultPresenter = allPresenters[selectedPresenter] || Object.values(allPresenters)[0]
       if (defaultPresenter) {
         setCurrentPresenter(defaultPresenter)
       }
@@ -57,13 +192,63 @@ const VirtualStudio = () => {
   const generateBulletin = async () => {
     try {
       setIsLoading(true)
-      const bulletinData = await NewsAPI.generateBulletin({
-        language: selectedLanguage,
-        bulletin_type: 'regular'
-      })
       
-      setCurrentBulletin(bulletinData)
-      fetchBulletinHistory()
+      const mockBulletinData = {
+        id: Date.now(),
+        language: selectedLanguage,
+        bulletin_type: 'regular',
+        generated_at: new Date().toISOString(),
+        script: {
+          language: selectedLanguage,
+          total_duration: 15,
+          script_parts: [
+            {
+              type: 'opening',
+              text: 'أهلاً ومرحباً بكم في نشرة أخبار جولان 24، معكم ' + (currentPresenter?.name || 'المذيع') + ' في هذه النشرة الإخبارية الشاملة',
+              duration_estimate: 2,
+              presenter: currentPresenter
+            },
+            {
+              type: 'news_item',
+              text: 'في أهم أخبار اليوم، تشهد المنطقة تطورات مهمة في مختلف المجالات السياسية والاقتصادية والاجتماعية',
+              duration_estimate: 3,
+              presenter: currentPresenter
+            },
+            {
+              type: 'news_item', 
+              text: 'وفي الأخبار الاقتصادية، تسجل الأسواق المالية أداءً متميزاً مع ارتفاع في مؤشرات البورصة',
+              duration_estimate: 3,
+              presenter: currentPresenter
+            },
+            {
+              type: 'news_item',
+              text: 'أما في مجال التكنولوجيا، فتواصل الشركات العالمية تطوير حلول مبتكرة في مجال الذكاء الاصطناعي',
+              duration_estimate: 3,
+              presenter: currentPresenter
+            },
+            {
+              type: 'closing',
+              text: 'وبهذا نصل إلى نهاية نشرتنا الإخبارية، شكراً لمتابعتكم ونلقاكم في النشرة القادمة، مع تحيات فريق جولان 24',
+              duration_estimate: 4,
+              presenter: currentPresenter
+            }
+          ]
+        }
+      }
+      
+      setCurrentBulletin(mockBulletinData)
+      
+      setBulletinHistory(prev => [
+        {
+          id: mockBulletinData.id,
+          language: selectedLanguage,
+          articles_count: 3,
+          duration: 15,
+          generated_at: new Date().toISOString()
+        },
+        ...prev.slice(0, 4) // Keep only last 5
+      ])
+      
     } catch (error) {
       console.error('Error generating bulletin:', error)
     } finally {
@@ -71,25 +256,88 @@ const VirtualStudio = () => {
     }
   }
 
-  const startLiveBroadcast = () => {
-    setIsLive(true)
-    console.log('Starting live broadcast...')
+  const startLiveBroadcast = async () => {
+    try {
+      setIsLive(true)
+      console.log('Starting live broadcast...')
+      
+      const response = await fetch('/api/studio/start-broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          presenter: selectedPresenter,
+          settings: broadcastSettings,
+          studio: studioSettings
+        })
+      })
+      
+      if (response.ok) {
+        console.log('Live broadcast started successfully')
+      }
+    } catch (error) {
+      console.error('Error starting broadcast:', error)
+      setIsLive(false)
+    }
   }
 
-  const stopLiveBroadcast = () => {
-    setIsLive(false)
-    console.log('Stopping live broadcast...')
+  const stopLiveBroadcast = async () => {
+    try {
+      setIsLive(false)
+      console.log('Stopping live broadcast...')
+      
+      const response = await fetch('/api/studio/stop-broadcast', {
+        method: 'POST'
+      })
+      
+      if (response.ok) {
+        console.log('Live broadcast stopped successfully')
+      }
+    } catch (error) {
+      console.error('Error stopping broadcast:', error)
+    }
   }
 
-  const startRecording = () => {
-    setIsRecording(true)
-    console.log('Starting recording...')
+  const startRecording = async () => {
+    try {
+      setIsRecording(true)
+      console.log('Starting recording...')
+      
+      const response = await fetch('/api/studio/start-recording', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          presenter: selectedPresenter,
+          settings: broadcastSettings,
+          studio: studioSettings
+        })
+      })
+      
+      if (response.ok) {
+        console.log('Recording started successfully')
+      }
+    } catch (error) {
+      console.error('Error starting recording:', error)
+      setIsRecording(false)
+    }
   }
 
-  const stopRecording = () => {
-    setIsRecording(false)
-    console.log('Stopping recording...')
+  const stopRecording = async () => {
+    try {
+      setIsRecording(false)
+      console.log('Stopping recording...')
+      
+      const response = await fetch('/api/studio/stop-recording', {
+        method: 'POST'
+      })
+      
+      if (response.ok) {
+        console.log('Recording stopped successfully')
+      }
+    } catch (error) {
+      console.error('Error stopping recording:', error)
+    }
   }
+
 
   return (
     <div className="space-y-6">
