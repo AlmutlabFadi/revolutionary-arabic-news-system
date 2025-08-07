@@ -87,11 +87,6 @@ const SourcesManager = () => {
     { value: 'عملات رقمية', label: 'عملات رقمية' },
     { value: 'أسواق مالية', label: 'أسواق مالية' },
     { value: 'بورصة', label: 'بورصة' },
-    { value: 'أخبار عاجلة', label: 'أخبار عاجلة' },
-    { value: 'رأي', label: 'رأي' },
-    { value: 'تحليلات', label: 'تحليلات' },
-    { value: 'تقارير', label: 'تقارير' },
-    { value: 'مقابلات', label: 'مقابلات' },
     { value: 'أخرى', label: 'أخرى' }
   ]
 
@@ -351,45 +346,6 @@ const SourcesManager = () => {
   const handleAddArticle = (source) => {
     setSelectedSource(source)
     setShowAddArticleModal(true)
-  }
-
-  const handleSubmitArticle = async (articleData) => {
-    try {
-      setIsLoading(true)
-      
-      const formData = new FormData()
-      formData.append('title', articleData.title)
-      formData.append('content', articleData.content)
-      formData.append('category', articleData.category)
-      formData.append('status', articleData.status)
-      formData.append('source_id', selectedSource?.id || 1)
-      
-      if (articleData.image) {
-        formData.append('image', articleData.image)
-      }
-      if (articleData.video) {
-        formData.append('video', articleData.video)
-      }
-      
-      const response = await fetch('/api/articles', {
-        method: 'POST',
-        body: formData
-      })
-      
-      if (response.ok) {
-        const newArticle = await response.json()
-        setArticles(prev => [newArticle, ...prev])
-        setShowAddArticleModal(false)
-        alert('تم إضافة المقال بنجاح!')
-      } else {
-        throw new Error('فشل في إضافة المقال')
-      }
-    } catch (error) {
-      console.error('Error adding article:', error)
-      alert('حدث خطأ أثناء إضافة المقال')
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   const handleViewAllCases = () => {
@@ -923,29 +879,11 @@ const SourcesManager = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">الفئة</label>
-                  <select 
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    onChange={(e) => {
-                      if (e.target.value === 'أخرى') {
-                        setShowCustomCategory(true)
-                      } else {
-                        setShowCustomCategory(false)
-                      }
-                    }}
-                  >
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     {categories.filter(c => c.value !== 'all').map(category => (
                       <option key={category.value} value={category.value}>{category.label}</option>
                     ))}
                   </select>
-                  {showCustomCategory && (
-                    <input
-                      type="text"
-                      value={customCategory}
-                      onChange={(e) => setCustomCategory(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-2"
-                      placeholder="أدخل الفئة المخصصة"
-                    />
-                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">الحالة</label>
@@ -977,22 +915,12 @@ const SourcesManager = () => {
             </div>
             <div className="flex justify-end space-x-3 space-x-reverse mt-6">
               <button
-                onClick={() => {
-                  setShowAddArticleModal(false)
-                  setSelectedSource(null)
-                }}
+                onClick={() => setShowAddArticleModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200"
               >
                 إلغاء
               </button>
-              <button 
-                onClick={() => {
-                  console.log('Adding article...')
-                  setShowAddArticleModal(false)
-                  setSelectedSource(null)
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700"
-              >
+              <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700">
                 إضافة المقال
               </button>
             </div>

@@ -55,6 +55,7 @@ function App() {
                 <Route path="/news/cryptocurrency" element={<CryptocurrencyPage />} />
                 <Route path="/news/stock-market" element={<StockMarketPage />} />
                 <Route path="/automation" element={<AutomationControl />} />
+                <Route path="/automation-control" element={<AutomationControl />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/sources" element={<SourcesManager />} />
                 <Route path="/articles" element={<ArticlesManager />} />

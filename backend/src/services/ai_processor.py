@@ -17,10 +17,27 @@ class MultiAIProcessor:
         self.perplexity_key = os.getenv('PERPLEXITY_API_KEY')
         self.claude_key = os.getenv('CLAUDE_API_KEY')
         self.gemini_key = os.getenv('GEMINI_API_KEY')
+        self.cohere_key = os.getenv('COHERE_API_KEY')
+        self.huggingface_key = os.getenv('HUGGINGFACE_API_KEY')
+        
+        self.mistral_key = os.getenv('MISTRAL_API_KEY')
+        self.llama_key = os.getenv('LLAMA_API_KEY')
+        self.grok_key = os.getenv('GROK_API_KEY')
+        self.palm_key = os.getenv('PALM_API_KEY')
         
         self.perplexity_base_url = "https://api.perplexity.ai/chat/completions"
+        self.gemini_base_url = "https://generativelanguage.googleapis.com/v1beta/models"
+        self.cohere_base_url = "https://api.cohere.ai/v1/generate"
+        self.huggingface_base_url = "https://api-inference.huggingface.co/models"
+        self.mistral_base_url = "https://api.mistral.ai/v1/chat/completions"
+        self.llama_base_url = "https://api.llama-api.com/chat/completions"
+        self.grok_base_url = "https://api.x.ai/v1/chat/completions"
         self.claude_base_url = "https://api.anthropic.com/v1/messages"
         self.gemini_base_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+        self.cohere_base_url = "https://api.cohere.ai/v1/generate"
+        self.huggingface_base_url = "https://api-inference.huggingface.co/models"
+        self.mistral_base_url = "https://api.mistral.ai/v1/chat/completions"
+        self.palm_base_url = "https://generativelanguage.googleapis.com/v1beta/models/text-bison-001:generateText"
         
         self.summarization_prompt = """
         أنت محرر أخبار محترف. قم بتلخيص المقال التالي في 2-3 جمل واضحة ومفيدة:
@@ -494,3 +511,121 @@ class MultiAIProcessor:
             synthesis['summary'] = f"تم تحليل الموضوع باستخدام {models_count} نماذج ذكاء اصطناعي متقدمة"
         
         return synthesis
+    
+    def call_cohere_api(self, prompt: str) -> str:
+        try:
+            if not self.cohere_key:
+                return "Cohere API key not configured"
+            
+            headers = {
+                'Authorization': f'Bearer {self.cohere_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            data = {
+                'model': 'command',
+                'prompt': prompt,
+                'max_tokens': 500,
+                'temperature': 0.7
+            }
+            
+            response = requests.post(self.cohere_base_url, headers=headers, json=data, timeout=30)
+            if response.status_code == 200:
+                return response.json().get('generations', [{}])[0].get('text', '')
+            return f"Cohere API error: {response.status_code}"
+        except Exception as e:
+            return f"Cohere API error: {str(e)}"
+    
+    def call_huggingface_api(self, prompt: str, model: str = "microsoft/DialoGPT-large") -> str:
+        try:
+            if not self.huggingface_key:
+                return "HuggingFace API key not configured"
+            
+            headers = {
+                'Authorization': f'Bearer {self.huggingface_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            data = {
+                'inputs': prompt,
+                'parameters': {
+                    'max_length': 500,
+                    'temperature': 0.7
+                }
+            }
+            
+            response = requests.post(f"{self.huggingface_base_url}/{model}", headers=headers, json=data, timeout=30)
+            if response.status_code == 200:
+                result = response.json()
+                if isinstance(result, list) and len(result) > 0:
+                    return result[0].get('generated_text', '')
+                return str(result)
+            return f"HuggingFace API error: {response.status_code}"
+        except Exception as e:
+            return f"HuggingFace API error: {str(e)}"
+    
+    def call_mistral_api(self, prompt: str) -> str:
+        try:
+            if not self.mistral_key:
+                return "Mistral API key not configured"
+            
+            headers = {
+                'Authorization': f'Bearer {self.mistral_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            data = {
+                'model': 'mistral-tiny',
+                'messages': [{'role': 'user', 'content': prompt}],
+                'max_tokens': 500,
+                'temperature': 0.7
+            }
+            
+            response = requests.post(self.mistral_base_url, headers=headers, json=data, timeout=30)
+            if response.status_code == 200:
+                return response.json().get('choices', [{}])[0].get('message', {}).get('content', '')
+            return f"Mistral API error: {response.status_code}"
+        except Exception as e:
+            return f"Mistral API error: {str(e)}"
+    
+    def enhanced_fact_check_with_multiple_models(self, title: str, content: str) -> Dict:
+        fact_check_prompt = f"""
+        تحقق من صحة هذا الخبر وقدم تقييماً شاملاً:
+        
+        العنوان: {title}
+        المحتوى: {content}
+        
+        قدم تقييماً يشمل:
+        1. مستوى المصداقية (عالي/متوسط/منخفض)
+        2. مصادر التحقق المطلوبة
+        3. علامات التحذير إن وجدت
+        4. التوصيات
+        """
+        
+        results = []
+        
+        models = [
+            ('perplexity', self.call_perplexity_api),
+            ('claude', self.call_claude_api),
+            ('gemini', self.call_gemini_api),
+            ('cohere', self.call_cohere_api),
+            ('mistral', self.call_mistral_api)
+        ]
+        
+        for model_name, api_func in models:
+            try:
+                result = api_func(fact_check_prompt)
+                if result and "error" not in result.lower():
+                    results.append({
+                        'model': model_name,
+                        'content': result,
+                        'timestamp': datetime.now().isoformat()
+                    })
+            except Exception as e:
+                logger.error(f"Error with {model_name}: {str(e)}")
+        
+        return {
+            'fact_check_results': results,
+            'consensus_score': len(results) / len(models),
+            'verification_timestamp': datetime.now().isoformat()
+        }

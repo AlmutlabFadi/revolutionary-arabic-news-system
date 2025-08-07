@@ -8,7 +8,7 @@ import json
 import hashlib
 
 from ..services.news_scraper import NewsScraper, NewsArticleData
-from ..services.ai_processor import AINewsProcessor
+from .ai_processor import MultiAIProcessor
 from ..services.performance_monitor import performance_monitor
 from ..models.database import db
 from ..models.news import NewsArticle, NewsSource, NewsCategory, NewsStatus, ScrapingLog
@@ -20,7 +20,7 @@ class AutomationService:
     def __init__(self, app=None):
         self.app = app
         self.scraper = NewsScraper()
-        self.ai_processor = AINewsProcessor()
+        self.ai_processor = MultiAIProcessor()
         self.is_running = False
         self.automation_thread = None
         

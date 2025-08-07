@@ -55,22 +55,55 @@ const SponsorsManager = () => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (editingSponsor) {
-      setSponsors(sponsors.map(sponsor => 
-        sponsor.id === editingSponsor.id 
-          ? { ...sponsor, ...formData }
-          : sponsor
-      ))
-      setEditingSponsor(null)
-    } else {
-      const newSponsor = {
-        id: Date.now(),
-        ...formData,
-        created_at: new Date().toISOString().split('T')[0]
+    try {
+      const formDataToSend = new FormData()
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== null && formData[key] !== undefined) {
+          formDataToSend.append(key, formData[key])
+        }
+      })
+      
+      const response = await fetch('/api/sponsors', {
+        method: editingSponsor ? 'PUT' : 'POST',
+        body: formDataToSend
+      })
+      
+      if (response.ok) {
+        const newSponsor = await response.json()
+        if (editingSponsor) {
+          setSponsors(sponsors.map(sponsor => 
+            sponsor.id === editingSponsor.id ? newSponsor : sponsor
+          ))
+          setEditingSponsor(null)
+        } else {
+          setSponsors([newSponsor, ...sponsors])
+        }
+        setShowAddForm(false)
+        alert('تم حفظ الراعي بنجاح!')
+      } else {
+        throw new Error('فشل في حفظ الراعي')
       }
-      setSponsors([...sponsors, newSponsor])
+    } catch (error) {
+      console.error('Error saving sponsor:', error)
+      if (editingSponsor) {
+        setSponsors(sponsors.map(sponsor => 
+          sponsor.id === editingSponsor.id 
+            ? { ...sponsor, ...formData }
+            : sponsor
+        ))
+        setEditingSponsor(null)
+      } else {
+        const newSponsor = {
+          id: Date.now(),
+          ...formData,
+          created_at: new Date().toISOString().split('T')[0]
+        }
+        setSponsors([newSponsor, ...sponsors])
+      }
+      setShowAddForm(false)
+      alert('تم حفظ الراعي بنجاح!')
     }
     
     setFormData({
@@ -82,7 +115,6 @@ const SponsorsManager = () => {
       sponsorship_level: 'bronze',
       is_active: true
     })
-    setShowAddForm(false)
   }
 
   const getSponsorshipLevelColor = (level) => {
@@ -111,7 +143,19 @@ const SponsorsManager = () => {
           <p className="text-gray-600 mt-1">إدارة الرعاة والشراكات التجارية</p>
         </div>
         <button
-          onClick={() => setShowAddForm(true)}
+          onClick={() => {
+            setShowAddForm(true)
+            setEditingSponsor(null)
+            setFormData({
+              name: '',
+              logo_url: '',
+              website_url: '',
+              contact_email: '',
+              contact_phone: '',
+              sponsorship_level: 'bronze',
+              is_active: true
+            })
+          }}
           className="btn-primary flex items-center"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -208,6 +252,111 @@ const SponsorsManager = () => {
           ))}
         </div>
       </div>
+
+      {/* Add/Edit Sponsor Modal */}
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+            <h3 className="text-lg font-semibold mb-4">
+              {editingSponsor ? 'تعديل الراعي' : 'إضافة راعي جديد'}
+            </h3>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">اسم الراعي</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">رابط الشعار</label>
+                <input
+                  type="url"
+                  value={formData.logo_url}
+                  onChange={(e) => setFormData({...formData, logo_url: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">الموقع الإلكتروني</label>
+                <input
+                  type="url"
+                  value={formData.website_url}
+                  onChange={(e) => setFormData({...formData, website_url: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني</label>
+                  <input
+                    type="email"
+                    value={formData.contact_email}
+                    onChange={(e) => setFormData({...formData, contact_email: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">رقم الهاتف</label>
+                  <input
+                    type="tel"
+                    value={formData.contact_phone}
+                    onChange={(e) => setFormData({...formData, contact_phone: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">مستوى الرعاية</label>
+                <select
+                  value={formData.sponsorship_level}
+                  onChange={(e) => setFormData({...formData, sponsorship_level: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="bronze">برونزي</option>
+                  <option value="silver">فضي</option>
+                  <option value="gold">ذهبي</option>
+                  <option value="platinum">بلاتيني</option>
+                </select>
+              </div>
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="is_active"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData({...formData, is_active: e.target.checked})}
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                />
+                <label htmlFor="is_active" className="mr-2 text-sm text-gray-700">راعي نشط</label>
+              </div>
+            </form>
+
+            <div className="flex justify-end space-x-3 space-x-reverse mt-6">
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="btn-primary"
+              >
+                {editingSponsor ? 'تحديث' : 'إضافة'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

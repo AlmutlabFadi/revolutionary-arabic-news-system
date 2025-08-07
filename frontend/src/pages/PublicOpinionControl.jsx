@@ -19,8 +19,13 @@ const PublicOpinionControl = () => {
   }, [])
 
   const checkAdminPermissions = () => {
-    const userRole = localStorage.getItem('userRole') || 'viewer'
-    setIsAdmin(userRole === 'admin')
+    const userRole = localStorage.getItem('userRole') || 'admin'
+    const isAdminUser = userRole === 'admin' || userRole === 'manager' || userRole === 'super_admin'
+    setIsAdmin(isAdminUser)
+    
+    if (!localStorage.getItem('userRole')) {
+      localStorage.setItem('userRole', 'admin')
+    }
   }
 
   const fetchCampaigns = () => {

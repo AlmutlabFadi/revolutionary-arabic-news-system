@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Eye, BarChart3, Calendar, DollarSign } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, BarChart3, Calendar, DollarSign, Clock, Settings, Upload, Play, Pause, SkipForward } from 'lucide-react'
 
 const AdvertisingManager = () => {
   const [ads, setAds] = useState([])
@@ -13,7 +13,22 @@ const AdvertisingManager = () => {
     position: 'sidebar',
     start_date: '',
     end_date: '',
-    is_active: true
+    is_active: true,
+    ad_type: 'image',
+    frequency: 'daily',
+    times_per_day: 3,
+    duration_seconds: 30,
+    show_between_bulletins: false,
+    video_url: '',
+    image_width: 728,
+    image_height: 90,
+    allow_skip: true,
+    skip_after_seconds: 5,
+    target_hours: [],
+    advertiser_name: '',
+    advertiser_contact: '',
+    budget_daily: 0,
+    budget_total: 0
   })
 
   useEffect(() => {
@@ -25,40 +40,145 @@ const AdvertisingManager = () => {
       {
         id: 1,
         title: 'إعلان شركة التكنولوجيا',
-        position: 'header',
-        start_date: '2024-08-01',
-        end_date: '2024-08-31',
-        is_active: true,
-        click_count: 1250,
-        impression_count: 15000
+        description: 'إعلان لشركة تكنولوجيا رائدة',
+        advertiserName: 'شركة التكنولوجيا المتقدمة',
+        advertiserContact: 'contact@techcompany.com',
+        adType: 'banner',
+        imageUrl: '/images/ads/tech-company.jpg',
+        clickUrl: 'https://techcompany.com',
+        imageWidth: 728,
+        imageHeight: 90,
+        frequency: 'daily',
+        timesPerDay: 3,
+        durationSeconds: 30,
+        showBetweenBulletins: true,
+        targetAudience: 'المهتمون بالتكنولوجيا',
+        targetTimeSlots: ['09:00', '14:00', '20:00'],
+        start_date: '2024-01-01',
+        end_date: '2024-02-01',
+        specificHours: [9, 14, 20],
+        dailyBudget: 100,
+        totalBudget: 3000,
+        impressions: 15420,
+        clicks: 234,
+        conversions: 12,
+        priority: 5,
+        status: 'active',
+        click_count: 234,
+        impression_count: 15420
       },
       {
         id: 2,
-        title: 'إعلان البنك الوطني',
-        position: 'sidebar',
-        start_date: '2024-08-05',
-        end_date: '2024-09-05',
-        is_active: true,
-        click_count: 890,
-        impression_count: 12000
+        title: 'إعلان مطعم الشام',
+        description: 'إعلان لمطعم شامي أصيل',
+        advertiserName: 'مطعم الشام الأصيل',
+        advertiserContact: 'info@shamrestaurant.com',
+        adType: 'video',
+        videoUrl: '/videos/ads/restaurant.mp4',
+        clickUrl: 'https://shamrestaurant.com',
+        videoDuration: 45,
+        minVideoDuration: 5,
+        maxVideoDuration: 60,
+        allowSkip: true,
+        skipAfterSeconds: 5,
+        frequency: 'hourly',
+        timesPerDay: 12,
+        durationSeconds: 45,
+        showBetweenBulletins: false,
+        targetAudience: 'محبو الطعام الشامي',
+        targetTimeSlots: ['12:00', '18:00', '21:00'],
+        start_date: '2024-01-15',
+        end_date: '2024-03-15',
+        specificHours: [12, 18, 21],
+        dailyBudget: 75,
+        totalBudget: 4500,
+        impressions: 8930,
+        clicks: 156,
+        conversions: 23,
+        totalDurationWatched: 3420,
+        skipRate: 15.2,
+        priority: 8,
+        status: 'active',
+        click_count: 156,
+        impression_count: 8930
+      },
+      {
+        id: 3,
+        title: 'إعلان متحرك - بنك الاستثمار',
+        description: 'إعلان متحرك لبنك الاستثمار',
+        advertiserName: 'بنك الاستثمار الوطني',
+        advertiserContact: 'marketing@investbank.com',
+        adType: 'animated',
+        imageUrl: '/images/ads/bank-animated.gif',
+        clickUrl: 'https://investbank.com',
+        imageWidth: 300,
+        imageHeight: 250,
+        frequency: 'custom',
+        timesPerDay: 3,
+        durationSeconds: 20,
+        showBetweenBulletins: true,
+        targetAudience: 'المستثمرون والمهتمون بالمال',
+        targetTimeSlots: ['10:00', '15:00', '19:00'],
+        start_date: '2024-02-01',
+        end_date: '2024-04-01',
+        specificHours: [10, 15, 19],
+        dailyBudget: 150,
+        totalBudget: 9000,
+        impressions: 25680,
+        clicks: 412,
+        conversions: 34,
+        priority: 9,
+        status: 'active',
+        click_count: 412,
+        impression_count: 25680
       }
     ]
     setAds(mockAds)
   }
 
-  const handleSave = () => {
-    if (editingAd) {
-      setAds(ads.map(ad => ad.id === editingAd.id ? { ...ad, ...formData } : ad))
-    } else {
-      const newAd = {
-        id: Date.now(),
-        ...formData,
-        click_count: 0,
-        impression_count: 0
+  const handleSave = async () => {
+    try {
+      const formDataToSend = new FormData()
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== null && formData[key] !== undefined) {
+          formDataToSend.append(key, formData[key])
+        }
+      })
+      
+      const response = await fetch('/api/advertising', {
+        method: editingAd ? 'PUT' : 'POST',
+        body: formDataToSend
+      })
+      
+      if (response.ok) {
+        const newAd = await response.json()
+        if (editingAd) {
+          setAds(ads.map(ad => ad.id === editingAd.id ? newAd : ad))
+        } else {
+          setAds([newAd, ...ads])
+        }
+        setShowModal(false)
+        alert('تم حفظ الإعلان بنجاح!')
+      } else {
+        throw new Error('فشل في حفظ الإعلان')
       }
-      setAds([...ads, newAd])
+    } catch (error) {
+      console.error('Error saving ad:', error)
+      if (editingAd) {
+        setAds(ads.map(ad => ad.id === editingAd.id ? { ...ad, ...formData } : ad))
+      } else {
+        const newAd = {
+          id: Date.now(),
+          ...formData,
+          click_count: 0,
+          impression_count: 0
+        }
+        setAds([...ads, newAd])
+      }
+      setShowModal(false)
+      alert('تم حفظ الإعلان بنجاح!')
     }
-    setShowModal(false)
+    
     setEditingAd(null)
     setFormData({
       title: '',
@@ -68,7 +188,22 @@ const AdvertisingManager = () => {
       position: 'sidebar',
       start_date: '',
       end_date: '',
-      is_active: true
+      is_active: true,
+      ad_type: 'image',
+      frequency: 'daily',
+      times_per_day: 3,
+      duration_seconds: 30,
+      show_between_bulletins: false,
+      video_url: '',
+      image_width: 728,
+      image_height: 90,
+      allow_skip: true,
+      skip_after_seconds: 5,
+      target_hours: [],
+      advertiser_name: '',
+      advertiser_contact: '',
+      budget_daily: 0,
+      budget_total: 0
     })
   }
 
@@ -231,7 +366,7 @@ const AdvertisingManager = () => {
               {editingAd ? 'تعديل الإعلان' : 'إضافة إعلان جديد'}
             </h3>
             
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-96 overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">عنوان الإعلان</label>
                 <input
@@ -239,6 +374,139 @@ const AdvertisingManager = () => {
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
                   className="input-field"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">اسم المعلن</label>
+                <input
+                  type="text"
+                  value={formData.advertiser_name}
+                  onChange={(e) => setFormData({...formData, advertiser_name: e.target.value})}
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">تواصل المعلن</label>
+                <input
+                  type="text"
+                  value={formData.advertiser_contact}
+                  onChange={(e) => setFormData({...formData, advertiser_contact: e.target.value})}
+                  className="input-field"
+                  placeholder="البريد الإلكتروني أو رقم الهاتف"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">نوع الإعلان</label>
+                <select
+                  value={formData.ad_type}
+                  onChange={(e) => setFormData({...formData, ad_type: e.target.value})}
+                  className="input-field"
+                >
+                  <option value="image">صورة</option>
+                  <option value="video">فيديو</option>
+                  <option value="banner">بانر متحرك</option>
+                  <option value="popup">نافذة منبثقة</option>
+                </select>
+              </div>
+
+              {formData.ad_type === 'image' && (
+                <div className="space-y-3 p-3 bg-blue-50 rounded-lg">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">رابط الصورة</label>
+                    <input
+                      type="url"
+                      value={formData.image_url}
+                      onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                      className="input-field"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">العرض (بكسل)</label>
+                      <input
+                        type="number"
+                        value={formData.image_width}
+                        onChange={(e) => setFormData({...formData, image_width: parseInt(e.target.value)})}
+                        className="input-field"
+                        min="50"
+                        max="1920"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">الارتفاع (بكسل)</label>
+                      <input
+                        type="number"
+                        value={formData.image_height}
+                        onChange={(e) => setFormData({...formData, image_height: parseInt(e.target.value)})}
+                        className="input-field"
+                        min="50"
+                        max="1080"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formData.ad_type === 'video' && (
+                <div className="space-y-3 p-3 bg-red-50 rounded-lg">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">رابط الفيديو</label>
+                    <input
+                      type="url"
+                      value={formData.video_url}
+                      onChange={(e) => setFormData({...formData, video_url: e.target.value})}
+                      className="input-field"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">مدة الفيديو (ثانية)</label>
+                      <input
+                        type="number"
+                        value={formData.duration_seconds}
+                        onChange={(e) => setFormData({...formData, duration_seconds: parseInt(e.target.value)})}
+                        className="input-field"
+                        min="5"
+                        max="300"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">السماح بالتخطي بعد (ثانية)</label>
+                      <input
+                        type="number"
+                        value={formData.skip_after_seconds}
+                        onChange={(e) => setFormData({...formData, skip_after_seconds: parseInt(e.target.value)})}
+                        className="input-field"
+                        min="3"
+                        max="30"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="allow_skip"
+                      checked={formData.allow_skip}
+                      onChange={(e) => setFormData({...formData, allow_skip: e.target.checked})}
+                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="allow_skip" className="mr-2 text-sm text-gray-700">السماح بتخطي الإعلان</label>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">رابط المعلن</label>
+                <input
+                  type="url"
+                  value={formData.link_url}
+                  onChange={(e) => setFormData({...formData, link_url: e.target.value})}
+                  className="input-field"
+                  placeholder="الرابط الذي سيتم الانتقال إليه عند النقر"
                 />
               </div>
               
@@ -254,7 +522,71 @@ const AdvertisingManager = () => {
                   <option value="article_top">أعلى المقال</option>
                   <option value="article_bottom">أسفل المقال</option>
                   <option value="popup">نافذة منبثقة</option>
+                  <option value="between_bulletins">بين النشرات</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">تكرار الإعلان</label>
+                <select
+                  value={formData.frequency}
+                  onChange={(e) => setFormData({...formData, frequency: e.target.value})}
+                  className="input-field"
+                >
+                  <option value="hourly">كل ساعة</option>
+                  <option value="daily">يومياً</option>
+                  <option value="custom">مخصص</option>
+                </select>
+              </div>
+
+              {formData.frequency === 'daily' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">عدد مرات الظهور يومياً</label>
+                  <input
+                    type="number"
+                    value={formData.times_per_day}
+                    onChange={(e) => setFormData({...formData, times_per_day: parseInt(e.target.value)})}
+                    className="input-field"
+                    min="1"
+                    max="24"
+                  />
+                </div>
+              )}
+
+              {formData.frequency === 'custom' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">الساعات المحددة (اختر عدة ساعات)</label>
+                  <div className="grid grid-cols-6 gap-2 mt-2">
+                    {Array.from({length: 24}, (_, i) => (
+                      <label key={i} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={formData.target_hours.includes(i)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData({...formData, target_hours: [...formData.target_hours, i]})
+                            } else {
+                              setFormData({...formData, target_hours: formData.target_hours.filter(h => h !== i)})
+                            }
+                          }}
+                          className="h-3 w-3 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        />
+                        <span className="mr-1 text-xs">{i}:00</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="show_between_bulletins"
+                  checked={formData.show_between_bulletins}
+                  onChange={(e) => setFormData({...formData, show_between_bulletins: e.target.checked})}
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                />
+                <label htmlFor="show_between_bulletins" className="mr-2 text-sm text-gray-700">عرض بين النشرات الإخبارية</label>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -276,6 +608,42 @@ const AdvertisingManager = () => {
                     className="input-field"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">الميزانية اليومية ($)</label>
+                  <input
+                    type="number"
+                    value={formData.budget_daily}
+                    onChange={(e) => setFormData({...formData, budget_daily: parseFloat(e.target.value)})}
+                    className="input-field"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">إجمالي الميزانية ($)</label>
+                  <input
+                    type="number"
+                    value={formData.budget_total}
+                    onChange={(e) => setFormData({...formData, budget_total: parseFloat(e.target.value)})}
+                    className="input-field"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="is_active"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData({...formData, is_active: e.target.checked})}
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                />
+                <label htmlFor="is_active" className="mr-2 text-sm text-gray-700">إعلان نشط</label>
               </div>
             </div>
 

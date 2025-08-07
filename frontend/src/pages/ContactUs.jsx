@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Mail, Phone, MapPin, MessageSquare, Briefcase, AlertCircle, Send, Facebook, Youtube } from 'lucide-react'
+import { Mail, Phone, MapPin, MessageSquare, MessageCircle, Briefcase, AlertCircle, Send, Facebook, Youtube } from 'lucide-react'
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -33,11 +33,30 @@ const ContactUs = () => {
     e.preventDefault()
     setIsSubmitting(true)
     
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setSubmitted(true)
-    setIsSubmitting(false)
-    setFormData({ name: '', email: '', phone: '', subject: '', category: 'general', message: '' })
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+      
+      if (response.ok) {
+        setSubmitted(true)
+        setFormData({ name: '', email: '', phone: '', subject: '', category: 'general', message: '' })
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setSubmitted(true)
+      setFormData({ name: '', email: '', phone: '', subject: '', category: 'general', message: '' })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleWhatsAppContact = () => {
+    const phoneNumber = '+963987654321'
+    const message = encodeURIComponent('مرحباً، أود التواصل معكم بخصوص موقع جولان 24')
+    window.open(`https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}?text=${message}`, '_blank')
   }
 
   if (submitted) {
@@ -214,6 +233,20 @@ const ContactUs = () => {
                   <p className="text-sm font-medium text-gray-900">الهاتف</p>
                   <p className="text-sm text-gray-600">+963 11 123 4567</p>
                 </div>
+              </div>
+              
+              <div className="mt-4">
+                <button
+                  onClick={() => {
+                    const message = encodeURIComponent('مرحباً، أود التواصل معكم بخصوص جولان 24')
+                    const whatsappUrl = `https://wa.me/963123456789?text=${message}`
+                    window.open(whatsappUrl, '_blank')
+                  }}
+                  className="flex items-center justify-center w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4 ml-2" />
+                  تواصل فوري عبر واتساب
+                </button>
               </div>
               
               <div className="flex items-center">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Facebook, MessageCircle, Youtube, Instagram, Send, Settings, CheckCircle, AlertCircle } from 'lucide-react'
+import { Facebook, MessageCircle, Youtube, Instagram, Send, Settings, CheckCircle, AlertCircle, Plus } from 'lucide-react'
 
 const SocialMediaManager = () => {
   const [socialAccounts, setSocialAccounts] = useState([])
@@ -13,6 +13,14 @@ const SocialMediaManager = () => {
   })
   const [publishHistory, setPublishHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showAddPlatformModal, setShowAddPlatformModal] = useState(false)
+  const [newPlatform, setNewPlatform] = useState({
+    name: '',
+    type: '',
+    icon: '',
+    url: '',
+    customHashtags: ''
+  })
 
   useEffect(() => {
     fetchSocialAccounts()
@@ -192,13 +200,22 @@ const SocialMediaManager = () => {
           <h1 className="text-2xl font-bold text-gray-900">إدارة وسائل التواصل الاجتماعي</h1>
           <p className="text-gray-600 mt-1">إدارة ونشر المحتوى عبر جميع المنصات الاجتماعية</p>
         </div>
-        <button
-          onClick={publishToAll}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Send className="w-4 h-4 mr-2" />
-          نشر على جميع المنصات
-        </button>
+        <div className="flex space-x-3 space-x-reverse">
+          <button
+            onClick={() => setShowAddPlatformModal(true)}
+            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            إضافة منصة جديدة
+          </button>
+          <button
+            onClick={publishToAll}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Send className="w-4 h-4 mr-2" />
+            نشر على جميع المنصات
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -289,6 +306,97 @@ const SocialMediaManager = () => {
           ))}
         </div>
       </div>
+
+      {/* Add New Platform Modal */}
+      {showAddPlatformModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">إضافة منصة جديدة</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">اسم المنصة</label>
+                <input
+                  type="text"
+                  value={newPlatform.name}
+                  onChange={(e) => setNewPlatform({...newPlatform, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="مثال: لينكد إن"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">نوع المنصة</label>
+                <select
+                  value={newPlatform.type}
+                  onChange={(e) => setNewPlatform({...newPlatform, type: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">اختر نوع المنصة</option>
+                  <option value="social">شبكة اجتماعية</option>
+                  <option value="messaging">تطبيق مراسلة</option>
+                  <option value="video">منصة فيديو</option>
+                  <option value="professional">شبكة مهنية</option>
+                  <option value="blog">مدونة</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">رابط المنصة</label>
+                <input
+                  type="url"
+                  value={newPlatform.url}
+                  onChange={(e) => setNewPlatform({...newPlatform, url: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://example.com/golan24"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">الهاشتاغات المخصصة</label>
+                <input
+                  type="text"
+                  value={newPlatform.customHashtags}
+                  onChange={(e) => setNewPlatform({...newPlatform, customHashtags: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="#جولان24 #أخبار"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 space-x-reverse mt-6">
+              <button
+                onClick={() => {
+                  setShowAddPlatformModal(false)
+                  setNewPlatform({ name: '', type: '', icon: '', url: '', customHashtags: '' })
+                }}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={() => {
+                  const platform = {
+                    id: Date.now(),
+                    ...newPlatform,
+                    followers: 0,
+                    connected: false,
+                    lastPost: null,
+                    status: 'disconnected'
+                  }
+                  
+                  setSocialAccounts(prev => [...prev, platform])
+                  setShowAddPlatformModal(false)
+                  setNewPlatform({ name: '', type: '', icon: '', url: '', customHashtags: '' })
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                إضافة المنصة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

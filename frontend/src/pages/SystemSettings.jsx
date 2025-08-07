@@ -26,9 +26,30 @@ const SystemSettings = () => {
     },
     ai: {
       openai_api_key: '',
-      model: 'gpt-3.5-turbo',
+      perplexity_api_key: '',
+      claude_api_key: '',
+      gemini_api_key: '',
+      cohere_api_key: '',
+      huggingface_api_key: '',
+      mistral_api_key: '',
+      llama_api_key: '',
+      grok_api_key: '',
+      model: 'gpt-4',
       temperature: 0.7,
-      max_tokens: 1000
+      max_tokens: 2000,
+      enable_multi_model: true,
+      fact_checking_enabled: true,
+      models_enabled: {
+        openai: true,
+        perplexity: true,
+        claude: true,
+        gemini: true,
+        cohere: false,
+        huggingface: false,
+        mistral: false,
+        llama: false,
+        grok: false
+      }
     },
     database: {
       backup_enabled: true,
@@ -43,8 +64,19 @@ const SystemSettings = () => {
     },
     security: {
       rate_limiting: true,
-      api_key_required: false,
-      cors_origins: 'http://localhost:3000,http://localhost:5173'
+      api_key_required: true,
+      cors_origins: 'http://localhost:3000,http://localhost:5173',
+      enable_firewall: true,
+      enable_ddos_protection: true,
+      enable_sql_injection_protection: true,
+      enable_xss_protection: true,
+      enable_csrf_protection: true,
+      enable_ip_whitelist: false,
+      enable_two_factor_auth: true,
+      enable_encryption: true,
+      enable_audit_logs: true,
+      max_login_attempts: 5,
+      session_timeout: 3600
     },
     performance: {
       cache_enabled: true,
@@ -239,42 +271,91 @@ const SystemSettings = () => {
           />
         </SettingCard>
 
-        <SettingCard title="إعدادات الذكاء الاصطناعي" icon={Bot}>
-          <InputField
-            label="مفتاح OpenAI API"
-            type="password"
-            value={settings.ai.openai_api_key}
-            onChange={(value) => updateSetting('ai', 'openai_api_key', value)}
-            placeholder="sk-..."
-            description="مفتاح API الخاص بـ OpenAI"
+        <SettingCard title="إعدادات الذكاء الاصطناعي المتقدمة" icon={Bot}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InputField
+              label="مفتاح OpenAI API"
+              type="password"
+              value={settings.ai.openai_api_key}
+              onChange={(value) => updateSetting('ai', 'openai_api_key', value)}
+              placeholder="sk-..."
+              description="مفتاح API الخاص بـ OpenAI"
+            />
+            
+            <InputField
+              label="مفتاح Perplexity API"
+              type="password"
+              value={settings.ai.perplexity_api_key || ''}
+              onChange={(value) => updateSetting('ai', 'perplexity_api_key', value)}
+              placeholder="pplx-..."
+              description="مفتاح API للبحث والتدقيق"
+            />
+            
+            <InputField
+              label="مفتاح Claude API"
+              type="password"
+              value={settings.ai.claude_api_key || ''}
+              onChange={(value) => updateSetting('ai', 'claude_api_key', value)}
+              placeholder="sk-ant-..."
+              description="مفتاح API الخاص بـ Claude"
+            />
+            
+            <InputField
+              label="مفتاح Gemini API"
+              type="password"
+              value={settings.ai.gemini_api_key || ''}
+              onChange={(value) => updateSetting('ai', 'gemini_api_key', value)}
+              placeholder="AI..."
+              description="مفتاح API الخاص بـ Gemini"
+            />
+            
+            <InputField
+              label="مفتاح Cohere API"
+              type="password"
+              value={settings.ai.cohere_api_key || ''}
+              onChange={(value) => updateSetting('ai', 'cohere_api_key', value)}
+              placeholder="..."
+              description="مفتاح API الخاص بـ Cohere"
+            />
+            
+            <InputField
+              label="مفتاح HuggingFace API"
+              type="password"
+              value={settings.ai.huggingface_api_key || ''}
+              onChange={(value) => updateSetting('ai', 'huggingface_api_key', value)}
+              placeholder="hf_..."
+              description="مفتاح API الخاص بـ HuggingFace"
+            />
+          </div>
+          
+          <CheckboxField
+            label="تفعيل النماذج المتعددة"
+            checked={settings.ai.multi_model_enabled || false}
+            onChange={(value) => updateSetting('ai', 'multi_model_enabled', value)}
+            description="استخدام عدة نماذج ذكاء اصطناعي في آن واحد"
           />
           
           <SelectField
-            label="نموذج الذكاء الاصطناعي"
+            label="النموذج الأساسي"
             value={settings.ai.model}
             onChange={(value) => updateSetting('ai', 'model', value)}
             options={[
               { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
               { value: 'gpt-4', label: 'GPT-4' },
-              { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' }
+              { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+              { value: 'claude-3-sonnet', label: 'Claude 3 Sonnet' },
+              { value: 'gemini-pro', label: 'Gemini Pro' },
+              { value: 'perplexity-sonar', label: 'Perplexity Sonar' }
             ]}
-            description="نموذج الذكاء الاصطناعي المستخدم"
+            description="النموذج الأساسي للمعالجة"
           />
           
           <InputField
-            label="درجة الحرارة"
+            label="الحد الأقصى للنماذج المتزامنة"
             type="number"
-            value={settings.ai.temperature}
-            onChange={(value) => updateSetting('ai', 'temperature', parseFloat(value))}
-            description="مستوى الإبداع في النصوص (0.0 - 1.0)"
-          />
-          
-          <InputField
-            label="الحد الأقصى للرموز"
-            type="number"
-            value={settings.ai.max_tokens}
-            onChange={(value) => updateSetting('ai', 'max_tokens', parseInt(value))}
-            description="الحد الأقصى لطول النص المولد"
+            value={settings.ai.max_concurrent_models || 3}
+            onChange={(value) => updateSetting('ai', 'max_concurrent_models', parseInt(value))}
+            description="عدد النماذج المستخدمة في نفس الوقت"
           />
         </SettingCard>
 
@@ -335,19 +416,79 @@ const SystemSettings = () => {
           />
         </SettingCard>
 
-        <SettingCard title="إعدادات الأمان" icon={Shield}>
-          <CheckboxField
-            label="تحديد معدل الطلبات"
-            checked={settings.security.rate_limiting}
-            onChange={(value) => updateSetting('security', 'rate_limiting', value)}
-            description="تحديد عدد الطلبات المسموحة"
+        <SettingCard title="إعدادات الأمان المتقدمة" icon={Shield}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CheckboxField
+              label="تحديد معدل الطلبات"
+              checked={settings.security.rate_limiting}
+              onChange={(value) => updateSetting('security', 'rate_limiting', value)}
+              description="تحديد عدد الطلبات المسموحة"
+            />
+            
+            <CheckboxField
+              label="حماية من DDoS"
+              checked={settings.security.ddos_protection || true}
+              onChange={(value) => updateSetting('security', 'ddos_protection', value)}
+              description="حماية من هجمات الحرمان من الخدمة"
+            />
+            
+            <CheckboxField
+              label="حماية من SQL Injection"
+              checked={settings.security.sql_injection_protection || true}
+              onChange={(value) => updateSetting('security', 'sql_injection_protection', value)}
+              description="حماية من هجمات حقن SQL"
+            />
+            
+            <CheckboxField
+              label="حماية من XSS"
+              checked={settings.security.xss_protection || true}
+              onChange={(value) => updateSetting('security', 'xss_protection', value)}
+              description="حماية من البرمجة النصية المتقاطعة"
+            />
+            
+            <CheckboxField
+              label="حماية من CSRF"
+              checked={settings.security.csrf_protection || true}
+              onChange={(value) => updateSetting('security', 'csrf_protection', value)}
+              description="حماية من تزوير الطلبات"
+            />
+            
+            <CheckboxField
+              label="تشفير الاتصالات"
+              checked={settings.security.ssl_encryption || true}
+              onChange={(value) => updateSetting('security', 'ssl_encryption', value)}
+              description="تشفير جميع الاتصالات"
+            />
+            
+            <CheckboxField
+              label="مراقبة الأمان المباشرة"
+              checked={settings.security.real_time_monitoring || true}
+              onChange={(value) => updateSetting('security', 'real_time_monitoring', value)}
+              description="مراقبة التهديدات في الوقت الفعلي"
+            />
+            
+            <CheckboxField
+              label="كشف التسلل"
+              checked={settings.security.intrusion_detection || true}
+              onChange={(value) => updateSetting('security', 'intrusion_detection', value)}
+              description="كشف محاولات التسلل والاختراق"
+            />
+          </div>
+          
+          <InputField
+            label="مهلة انتهاء الجلسة (بالدقائق)"
+            type="number"
+            value={settings.security.session_timeout || 30}
+            onChange={(value) => updateSetting('security', 'session_timeout', parseInt(value))}
+            description="مدة انتهاء صلاحية الجلسة"
           />
           
-          <CheckboxField
-            label="مطالبة بمفتاح API"
-            checked={settings.security.api_key_required}
-            onChange={(value) => updateSetting('security', 'api_key_required', value)}
-            description="مطالبة بمفتاح API للوصول"
+          <InputField
+            label="الحد الأقصى لمحاولات تسجيل الدخول"
+            type="number"
+            value={settings.security.max_login_attempts || 5}
+            onChange={(value) => updateSetting('security', 'max_login_attempts', parseInt(value))}
+            description="عدد المحاولات المسموحة قبل الحظر"
           />
           
           <InputField

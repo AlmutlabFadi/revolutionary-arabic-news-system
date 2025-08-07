@@ -14,6 +14,8 @@ from src.routes.news import news_bp
 from src.routes.automation import automation_bp
 from src.routes.analytics import analytics_bp
 from src.routes.presenter import presenter_bp
+from src.routes.financial import financial_bp
+from src.routes.contact import contact_bp
 from src.routes.health import health_bp
 from src.services.automation_service import AutomationService
 from src.services.websocket_service import WebSocketService
@@ -31,9 +33,9 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    CORS(app, origins=["http://localhost:3000", "http://localhost:5173"])
+    CORS(app, origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:3002"])
     
-    socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3000", "http://localhost:5173"])
+    socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:3002"])
     
     db.init_app(app)
     
@@ -42,6 +44,8 @@ def create_app():
     app.register_blueprint(automation_bp, url_prefix='/api/automation')
     app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
     app.register_blueprint(presenter_bp, url_prefix='/api/presenter')
+    app.register_blueprint(financial_bp, url_prefix='/api')
+    app.register_blueprint(contact_bp, url_prefix='/api')
     
     with app.app_context():
         db.create_all()
