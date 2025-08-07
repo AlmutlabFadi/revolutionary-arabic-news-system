@@ -44,6 +44,18 @@ const VirtualStudio = () => {
   const [showSettings, setShowSettings] = useState(false)
   const [showEditPresenter, setShowEditPresenter] = useState(false)
   const [showAddGuest, setShowAddGuest] = useState(false)
+  const [showGuestModal, setShowGuestModal] = useState(false)
+  const [guestInfo, setGuestInfo] = useState({
+    name: '',
+    type: 'guest',
+    connectionType: 'whatsapp',
+    connectionLink: '',
+    location: '',
+    expertise: '',
+    scheduledTime: '',
+    testConnection: false,
+    broadcastUrl: ''
+  })
   const [showFilters, setShowFilters] = useState(false)
   const [editingPresenter, setEditingPresenter] = useState(null)
   const [guests, setGuests] = useState([])
@@ -589,8 +601,12 @@ const VirtualStudio = () => {
           guest_name: guestInfo.name,
           guest_type: guestInfo.type,
           connection_type: guestInfo.connectionType,
+          connection_link: guestInfo.connectionLink,
           location: guestInfo.location,
-          expertise: guestInfo.expertise
+          expertise: guestInfo.expertise,
+          scheduled_time: guestInfo.scheduledTime,
+          test_connection: guestInfo.testConnection,
+          broadcast_url: guestInfo.broadcastUrl
         })
       })
       
@@ -598,13 +614,68 @@ const VirtualStudio = () => {
         setBroadcastSettings(prev => ({ 
           ...prev, 
           hasGuests: true,
-          guestInfo: [...(prev.guestInfo || []), guestInfo]
+          guestInfo: [...(prev.guestInfo || []), {
+            ...guestInfo,
+            id: Date.now(),
+            status: 'scheduled',
+            connectionStatus: 'pending'
+          }]
         }))
       }
       setIsLoading(false)
     } catch (error) {
       console.error('Error adding guest:', error)
       setIsLoading(false)
+    }
+  }
+
+  const testGuestConnection = async (guestId) => {
+    try {
+      const response = await fetch('/api/studio/test-guest-connection', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guest_id: guestId })
+      })
+      
+      if (response.ok) {
+        setBroadcastSettings(prev => ({
+          ...prev,
+          guestInfo: prev.guestInfo.map(guest => 
+            guest.id === guestId 
+              ? { ...guest, connectionStatus: 'tested', testResult: 'success' }
+              : guest
+          )
+        }))
+        alert('تم اختبار الاتصال مع الضيف بنجاح!')
+      }
+    } catch (error) {
+      console.error('Error testing guest connection:', error)
+      alert('فشل في اختبار الاتصال مع الضيف')
+    }
+  }
+
+  const mergeGuestToBroadcast = async (guestId) => {
+    try {
+      const response = await fetch('/api/studio/merge-guest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guest_id: guestId })
+      })
+      
+      if (response.ok) {
+        setBroadcastSettings(prev => ({
+          ...prev,
+          guestInfo: prev.guestInfo.map(guest => 
+            guest.id === guestId 
+              ? { ...guest, status: 'live', connectionStatus: 'connected' }
+              : guest
+          )
+        }))
+        alert('تم دمج الضيف في البث المباشر بنجاح!')
+      }
+    } catch (error) {
+      console.error('Error merging guest to broadcast:', error)
+      alert('فشل في دمج الضيف في البث')
     }
   }
 
@@ -853,11 +924,11 @@ const VirtualStudio = () => {
             إعدادات الاستوديو
           </button>
           <button 
-            onClick={() => setShowAddGuest(true)}
+            onClick={() => setShowGuestModal(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
           >
             <UserPlus className="w-4 h-4 ml-2" />
-            إضافة ضيف
+            إضافة ضيف أو مراسل
           </button>
           <button 
             onClick={() => setShowFilters(true)}
@@ -1425,96 +1496,225 @@ const VirtualStudio = () => {
         </div>
       )}
 
-      {/* Add Guest Modal */}
-      {showAddGuest && (
+      {/* مودال إضافة ضيف محسن */}
+      {showGuestModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-lg">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">إضافة ضيف أو مراسل</h3>
-              <button
-                onClick={() => setShowAddGuest(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">إضافة ضيف أو مراسل</h3>
             
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">نوع المشارك</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                  <option value="guest">ضيف في الاستوديو</option>
-                  <option value="correspondent">مراسل على الأرض</option>
-                  <option value="analyst">محلل</option>
-                  <option value="expert">خبير</option>
-                </select>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">الاسم</label>
+                  <input
+                    type="text"
+                    value={guestInfo.name}
+                    onChange={(e) => setGuestInfo(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="اسم الضيف أو المراسل"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">نوع المشارك</label>
+                  <select
+                    value={guestInfo.type}
+                    onChange={(e) => setGuestInfo(prev => ({ ...prev, type: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="guest">ضيف في الاستوديو</option>
+                    <option value="correspondent">مراسل على الأرض</option>
+                    <option value="analyst">محلل</option>
+                    <option value="expert">خبير</option>
+                  </select>
+                </div>
               </div>
-              
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">نوع الاتصال</label>
+                  <select
+                    value={guestInfo.connectionType}
+                    onChange={(e) => setGuestInfo(prev => ({ ...prev, connectionType: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="whatsapp">واتساب فيديو</option>
+                    <option value="skype">سكايب</option>
+                    <option value="zoom">زوم</option>
+                    <option value="google_meet">جوجل ميت</option>
+                    <option value="live_stream">بث مباشر</option>
+                    <option value="phone">مكالمة هاتفية</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">رابط الاتصال</label>
+                  <input
+                    type="url"
+                    value={guestInfo.connectionLink}
+                    onChange={(e) => setGuestInfo(prev => ({ ...prev, connectionLink: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="رابط الاتصال (واتساب، زوم، إلخ)"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">وقت الدخول المجدول</label>
+                  <input
+                    type="datetime-local"
+                    value={guestInfo.scheduledTime}
+                    onChange={(e) => setGuestInfo(prev => ({ ...prev, scheduledTime: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">الموقع الجغرافي</label>
+                  <input
+                    type="text"
+                    value={guestInfo.location}
+                    onChange={(e) => setGuestInfo(prev => ({ ...prev, location: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="الموقع الجغرافي"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">الاسم</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">التخصص/المجال</label>
                 <input
                   type="text"
+                  value={guestInfo.expertise}
+                  onChange={(e) => setGuestInfo(prev => ({ ...prev, expertise: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="اسم الضيف أو المراسل"
+                  placeholder="مجال التخصص أو الخبرة"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">المنصب/التخصص</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">رابط البث المباشر (اختياري)</label>
                 <input
-                  type="text"
+                  type="url"
+                  value={guestInfo.broadcastUrl}
+                  onChange={(e) => setGuestInfo(prev => ({ ...prev, broadcastUrl: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="المنصب أو مجال التخصص"
+                  placeholder="رابط البث المباشر للضيف"
                 />
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">الموقع</label>
+
+              <div className="flex items-center">
                 <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="الموقع الجغرافي"
+                  type="checkbox"
+                  id="testConnection"
+                  checked={guestInfo.testConnection}
+                  onChange={(e) => setGuestInfo(prev => ({ ...prev, testConnection: e.target.checked }))}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">نوع الاتصال</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                  <option value="video">فيديو عالي الجودة</option>
-                  <option value="audio">صوت فقط</option>
-                  <option value="phone">هاتف</option>
-                  <option value="satellite">اتصال عبر الأقمار الصناعية</option>
-                </select>
-              </div>
-              
-              <div className="flex items-center space-x-4 space-x-reverse">
-                <label className="flex items-center">
-                  <input type="checkbox" className="ml-2" />
-                  <span className="text-sm">تفعيل فلاتر الصوت</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="ml-2" />
-                  <span className="text-sm">تفعيل فلاتر الصورة</span>
+                <label htmlFor="testConnection" className="mr-2 block text-sm text-gray-900">
+                  إجراء اختبار اتصال قبل البث المباشر
                 </label>
               </div>
             </div>
-            
-            <div className="flex justify-end space-x-3 space-x-reverse mt-6">
+
+            <div className="flex justify-end space-x-3 space-x-reverse pt-6 mt-6 border-t border-gray-200">
               <button
-                onClick={() => setShowAddGuest(false)}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                onClick={() => setShowGuestModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200"
               >
                 إلغاء
               </button>
               <button
                 onClick={() => {
-                  setShowAddGuest(false)
+                  addGuest(guestInfo)
+                  setShowGuestModal(false)
+                  setGuestInfo({
+                    name: '',
+                    type: 'guest',
+                    connectionType: 'whatsapp',
+                    connectionLink: '',
+                    location: '',
+                    expertise: '',
+                    scheduledTime: '',
+                    testConnection: false,
+                    broadcastUrl: ''
+                  })
                 }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700"
               >
                 إضافة المشارك
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* قائمة الضيوف المجدولين */}
+      {broadcastSettings.guestInfo && broadcastSettings.guestInfo.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">الضيوف والمراسلين المجدولين</h3>
+          <div className="space-y-4">
+            {broadcastSettings.guestInfo.map((guest) => (
+              <div key={guest.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 space-x-reverse">
+                    <h4 className="font-medium text-gray-900">{guest.name}</h4>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      guest.status === 'live' ? 'bg-red-100 text-red-800' :
+                      guest.status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {guest.status === 'live' ? 'على الهواء' : 
+                       guest.status === 'scheduled' ? 'مجدول' : 'في الانتظار'}
+                    </span>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      guest.connectionStatus === 'connected' ? 'bg-green-100 text-green-800' :
+                      guest.connectionStatus === 'tested' ? 'bg-blue-100 text-blue-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {guest.connectionStatus === 'connected' ? 'متصل' : 
+                       guest.connectionStatus === 'tested' ? 'تم الاختبار' : 'في الانتظار'}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-sm text-gray-600">
+                    <p>{guest.type === 'guest' ? 'ضيف' : guest.type === 'correspondent' ? 'مراسل' : guest.type} • {guest.expertise}</p>
+                    <p>{guest.connectionType} • {guest.location}</p>
+                    {guest.scheduledTime && (
+                      <p>مجدول: {new Date(guest.scheduledTime).toLocaleString('ar-SA')}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  {guest.connectionStatus !== 'tested' && guest.testConnection && (
+                    <button
+                      onClick={() => testGuestConnection(guest.id)}
+                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      اختبار الاتصال
+                    </button>
+                  )}
+                  {guest.connectionStatus === 'tested' && guest.status !== 'live' && (
+                    <button
+                      onClick={() => mergeGuestToBroadcast(guest.id)}
+                      className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                      دمج في البث
+                    </button>
+                  )}
+                  {guest.connectionLink && (
+                    <a
+                      href={guest.connectionLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                    >
+                      فتح الرابط
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

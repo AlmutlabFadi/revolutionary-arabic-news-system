@@ -33,9 +33,9 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    CORS(app, origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:3002"])
+    CORS(app, origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:3002", "http://localhost:3001"])
     
-    socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:3002"])
+    socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:3002", "http://localhost:3001"])
     
     db.init_app(app)
     
