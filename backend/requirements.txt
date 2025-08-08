@@ -15,3 +15,4 @@ psycopg2-binary==2.9.7
 gunicorn==21.2.0
 prometheus-client==0.17.1
 APScheduler==3.10.4
+eventlet==0.33.3
