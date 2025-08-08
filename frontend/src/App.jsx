@@ -3,9 +3,12 @@ import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom'
 import Sidebar from './components/layout/Sidebar'
 import Header from './components/layout/Header'
 import Dashboard from './pages/Dashboard'
+import RealDashboard from './pages/RealDashboard'
 import NewsPortal from './pages/NewsPortal'
 import AutomationControl from './pages/AutomationControl'
+import RealAutomationControl from './pages/RealAutomationControl'
 import AnalyticsPage from './pages/AnalyticsPage'
+import RealAnalyticsPage from './pages/RealAnalyticsPage'
 import SourcesManager from './pages/SourcesManager'
 import ArticlesManager from './pages/ArticlesManager'
 import VirtualStudio from './pages/VirtualStudio'
@@ -42,7 +45,8 @@ function App() {
             <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
               <Routes>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<RealDashboard />} />
+                <Route path="/dashboard-old" element={<Dashboard />} />
                 <Route path="/news-portal" element={<NewsPortal />} />
                 <Route path="/news/politics" element={<NewsPortal />} />
                 <Route path="/news/economy" element={<NewsPortal />} />
@@ -54,9 +58,11 @@ function App() {
                 <Route path="/news/syrian-affairs" element={<NewsPortal />} />
                 <Route path="/news/cryptocurrency" element={<CryptocurrencyPage />} />
                 <Route path="/news/stock-market" element={<StockMarketPage />} />
-                <Route path="/automation" element={<AutomationControl />} />
-                <Route path="/automation-control" element={<AutomationControl />} />
-                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/automation" element={<RealAutomationControl />} />
+                <Route path="/automation-control" element={<RealAutomationControl />} />
+                <Route path="/automation-old" element={<AutomationControl />} />
+                <Route path="/analytics" element={<RealAnalyticsPage />} />
+                <Route path="/analytics-old" element={<AnalyticsPage />} />
                 <Route path="/sources" element={<SourcesManager />} />
                 <Route path="/articles" element={<ArticlesManager />} />
                 <Route path="/virtual-studio" element={<VirtualStudio />} />
